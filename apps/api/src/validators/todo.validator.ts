@@ -12,3 +12,16 @@ export const createTodoSchema = z.strictObject({
     })
     .optional(),
 });
+
+export const todoIdSchema = z
+  .string()
+  .regex(/^[a-fA-F0-9]{24}$/, 'Invalid TODO ID');
+
+export const updateTodoSchema = createTodoSchema
+  .partial()
+  .refine(
+    (input) => input.title != undefined || input.description != undefined,
+    {
+      message: 'At least one field must be provided',
+    },
+  );

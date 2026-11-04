@@ -8,3 +8,10 @@ export async function createTodo(input: CreateTodoInput) {
 export async function listTodos() {
   return todoRepository.findTodos();
 }
+
+export async function updateTodo(
+  id: string,
+  input: todoRepository.UpdateTodoInput,
+) {
+  return todoRepository.updateTodo(id, input);
+}
