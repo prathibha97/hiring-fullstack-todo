@@ -65,3 +65,17 @@ export async function toggleTodoDone(id: string): Promise<Todo> {
   const data: { todo: Todo } = await response.json();
   return data.todo;
 }
+
+export async function deleteTodo(id: string): Promise<void> {
+  if (!apiUrl) {
+    throw new Error('API URL is not configured');
+  }
+
+  const response = await fetch(`${apiUrl}/api/todos/${id}`, {
+    method: 'DELETE',
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to delete this TODO, please try again');
+  }
+}

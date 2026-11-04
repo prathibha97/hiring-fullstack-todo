@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { toggleTodoDone, type Todo } from './todo.api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { deleteTodo, toggleTodoDone, type Todo } from './todo.api';
 import { todoKeys } from './todo.queries';
 
 type TodoItemProps = {
@@ -10,7 +10,7 @@ type TodoItemProps = {
 export function TodoItem({ todo }: TodoItemProps) {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
+  const toggleMutation = useMutation({
     mutationFn: toggleTodoDone,
     retry: false,
     onSuccess: async () => {
@@ -19,6 +19,25 @@ export function TodoItem({ todo }: TodoItemProps) {
       });
     },
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteTodo,
+    retry: false,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: todoKeys.all,
+      });
+    },
+  });
+
+  const isBusy = toggleMutation.isPending || deleteMutation.isPending;
+
+  function handleDelete() {
+    if (isBusy) return;
+    if (window.confirm('Are you sure you want to delete this todo?')) {
+      deleteMutation.mutate(todo._id);
+    }
+  }
 
   return (
     <li className='space-y-3 rounded-lg border bg-card p-4'>
@@ -39,26 +58,39 @@ export function TodoItem({ todo }: TodoItemProps) {
           )}
         </div>
 
-        <Button
-          variant='outline'
-          size='sm'
-          className='shrink-0'
-          disabled={mutation.isPending}
-          aria-pressed={todo.done}
-          aria-label={`Mark ${todo.title} as ${todo.done ? 'pending' : 'done'}`}
-          onClick={() => mutation.mutate(todo._id)}
-        >
-          {mutation.isPending
-            ? 'Saving…'
-            : todo.done
-              ? 'Mark pending'
-              : 'Mark done'}
-        </Button>
+        <div className='flex shrink-0 flex-wrap gap-2'>
+          <Button
+            variant='outline'
+            size='sm'
+            disabled={isBusy}
+            aria-pressed={todo.done}
+            aria-label={`Mark ${todo.title} as ${
+              todo.done ? 'pending' : 'done'
+            }`}
+            onClick={() => toggleMutation.mutate(todo._id)}
+          >
+            {toggleMutation.isPending
+              ? 'Saving…'
+              : todo.done
+                ? 'Mark pending'
+                : 'Mark done'}
+          </Button>
+
+          <Button
+            variant='destructive'
+            size='sm'
+            disabled={isBusy}
+            aria-label={`Delete ${todo.title}`}
+            onClick={handleDelete}
+          >
+            {deleteMutation.isPending ? 'Deleting…' : 'Delete'}
+          </Button>
+        </div>
       </div>
 
-      {mutation.isError && (
+      {(toggleMutation.isError || deleteMutation.isError) && (
         <p role='alert' className='text-sm text-destructive'>
-          {mutation.error.message}
+          {deleteMutation.error?.message ?? toggleMutation.error?.message}
         </p>
       )}
     </li>
