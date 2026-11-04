@@ -23,6 +23,7 @@ async function apiFetch(url: string, options?: RequestInit): Promise<Response> {
     if (options?.signal?.aborted) throw error;
     throw new Error(
       "Cannot reach the server. Check your connection and try again.",
+      { cause: error },
     );
   }
 }

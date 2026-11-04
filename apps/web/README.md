@@ -65,7 +65,7 @@ yarn workspace web build
 yarn workspace web lint
 ```
 
-The build includes TypeScript checks. The current Vite starter's `typescript-eslint` package does not support the installed TypeScript 7 compiler, so lint currently fails before analyzing files. This compatibility issue remains to be resolved; the build passing is not a substitute for lint.
+The build checks TypeScript types, undefined names, and unused declarations. ESLint uses Babel’s TypeScript/JSX parser, matching the API’s approach and avoiding the current `typescript-eslint` incompatibility with TypeScript 7. React Hooks and Fast Refresh rules remain enabled. Run both lint and build; they cover different checks.
 
 Backend tests require Docker MongoDB:
 
