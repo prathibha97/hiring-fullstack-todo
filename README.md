@@ -1,3 +1,37 @@
+# Full-stack TODO assessment
+
+## Local setup
+
+Use Node.js 24 or newer and Yarn 4.17.1 (pinned in `package.json`). From the repository root:
+
+```sh
+yarn install --immutable
+yarn dev
+```
+
+The existing `web` app runs at http://localhost:3000 and the starter `docs` app at http://localhost:3001.
+
+```sh
+yarn lint
+yarn check-types
+yarn build
+```
+
+Yarn uses `node_modules` via `.yarnrc.yml` so the installed TypeScript 7 compiler can resolve workspace dependencies. ESLint checks JavaScript, TypeScript, and TSX syntax plus React/Next.js rules; TypeScript checks names and unused declarations through `check-types`.
+
+## Architecture plan
+
+- Keep `apps/web` as the React frontend using the existing Next.js setup.
+- Add `apps/api` for an Express HTTP API backed by MongoDB with Mongoose.
+- Keep shared UI, ESLint, and TypeScript packages under `packages/`.
+- Implement the five TODO endpoints incrementally, then connect the UI with validation, loading, and error states.
+- Add frontend and backend setup READMEs, including database connection notes and limitations.
+- Work on `develop`; submit a `develop` to `main` PR with the rationale, demo video, and five-minute code walkthrough.
+
+The API and TODO functionality are not implemented yet.
+
+---
+
 # Turborepo starter
 
 This Turborepo starter is maintained by the Turborepo core team.
