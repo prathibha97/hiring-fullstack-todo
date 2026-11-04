@@ -17,12 +17,15 @@ concurrency:
 jobs:
   checks:
     name: Lint, types, tests, and build
-    runs-on: ubuntu-latest
+    # MongoDB 8.0 rejects the newer kernels currently used by ubuntu-latest.
+    runs-on: ubuntu-22.04
     timeout-minutes: 15
     env:
       COMPOSE_PROJECT_NAME: todo-ci-checks
       CI: true
     steps:
+      - name: Show runner kernel
+        run: uname -r
       - name: Check out repository
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
@@ -58,11 +61,14 @@ jobs:
   compose:
     name: Docker Compose smoke test
     needs: checks
-    runs-on: ubuntu-latest
+    # MongoDB 8.0 rejects the newer kernels currently used by ubuntu-latest.
+    runs-on: ubuntu-22.04
     timeout-minutes: 20
     env:
       COMPOSE_PROJECT_NAME: todo-ci-compose
     steps:
+      - name: Show runner kernel
+        run: uname -r
       - name: Check out repository
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:

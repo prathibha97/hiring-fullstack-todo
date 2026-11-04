@@ -77,7 +77,7 @@ Frontend tests use Vitest, Testing Library, and jsdom. Backend tests cover valid
 
 ## Continuous integration
 
-GitHub Actions runs on pushes to `develop` and `main`, pull requests targeting either branch, and manual dispatch. The first job installs the locked dependencies, runs lint, strict type checks, frontend formatting, all tests against Docker MongoDB, and workspace builds. The second job builds and starts the full Compose stack, then checks the app assets, Swagger/OpenAPI, and TODO operations through Nginx. Both jobs clean up their temporary containers and volumes. No repository secrets, image publishing, or deployment are configured.
+GitHub Actions runs on pushes to `develop` and `main`, pull requests targeting either branch, and manual dispatch. The first job installs the locked dependencies, runs lint, strict type checks, frontend formatting, all tests against Docker MongoDB, and workspace builds. The second job builds and starts the full Compose stack, then checks the app assets, Swagger/OpenAPI, and TODO operations through Nginx. Both jobs clean up their temporary containers and volumes. They currently use the Ubuntu 22.04 runner because MongoDB 8.0 rejects newer kernels used by `ubuntu-latest`; see [MongoDB’s kernel compatibility notice](https://www.mongodb.com/docs/v8.0/release-notes/8.0/). Revisit this runner pin when MongoDB supports the newer hosted runner kernel. No repository secrets, image publishing, or deployment are configured.
 
 To run the container smoke check locally after starting Compose:
 
