@@ -2,6 +2,7 @@ import type { OpenAPIRegistry } from '@asteasolutions/zod-to-openapi';
 import { z } from 'zod';
 import {
   createTodoSchema,
+  listTodosQuerySchema,
   todoIdSchema,
   updateTodoSchema,
 } from '../validators/todo.validator.js';
@@ -48,9 +49,12 @@ export function registerTodoPaths(registry: OpenAPIRegistry) {
     tags: ['Todos'],
     operationId: 'listTodos',
     summary: 'List all TODOs',
-    description: 'Returns TODOs ordered newest first.',
+    description:
+      'Returns a page of TODOs, newest first. Search matches literal title/description text, ignoring case. Counts cover all tasks independently of filters. Pages beyond the last page are clamped; empty results return page 1 of 1.',
+    request: { query: listTodosQuerySchema },
     responses: {
       200: jsonResponse('TODO list', todoListResponseSchema),
+      400: badRequest,
       500: serverError,
     },
   });

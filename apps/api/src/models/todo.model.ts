@@ -22,6 +22,9 @@ const schema = new Schema(
   },
 );
 
+schema.index({ createdAt: -1, _id: -1 });
+schema.index({ done: 1, createdAt: -1, _id: -1 });
+
 export type Todo = InferSchemaType<typeof schema>;
 
 export const TodoModel = model<Todo>('Todo', schema);

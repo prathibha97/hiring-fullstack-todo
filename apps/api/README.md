@@ -43,11 +43,24 @@ The API connects to MongoDB before accepting HTTP requests. If initial database 
 | PATCH  | `/api/todos/:id/done` | Atomically toggle done        |
 | DELETE | `/api/todos/:id`      | Delete a TODO                 |
 
-Creation returns 201 with `{ todo }`; update and toggle return 200 with `{ todo }`. Listing returns 200 with `{ todos }`. Deletion returns 204 without a body. Invalid input returns 400, missing TODOs return 404, oversized bodies return 413, and unexpected failures return a generic JSON 500 response.
+Creation returns 201 with `{ todo }`; update and toggle return 200 with `{ todo }`. Listing returns 200 with `{ todos, pagination, counts }`. Deletion returns 204 without a body. Invalid input returns 400, missing TODOs return 404, oversized bodies return 413, and unexpected failures return a generic JSON 500 response.
 
 - Swagger UI: http://localhost:4000/api/docs/
 - OpenAPI JSON: http://localhost:4000/api/openapi.json
 - HTTP health: http://localhost:4000/health
+
+## Pagination and search
+
+`GET /api/todos?page=1&limit=10&status=active&search=meeting`
+
+- `page`: positive integer, defaults to 1 (maximum 1,000,000).
+- `limit`: integer from 1 to 50, defaults to 10.
+- `status`: `all` (default), `active`, or `completed`.
+- `search`: up to 200 characters; matches literal text in titles and descriptions, ignoring case.
+
+`pagination` contains `page`, `limit`, `total` (matching records), and `totalPages`. Empty results use page 1 of 1. Requests beyond the last page return the last available page, including after deletion. Sorting uses newest creation date first, then descending ID to break ties.
+
+`counts` contains `all`, `active`, and `completed` totals across the entire collection, independent of filters and search. Compound indexes support the default and status-filtered ordering; text search uses a case-insensitive regular expression and scans matching documents. Offset pagination is appropriate for this assessment; very large datasets would benefit from cursor pagination and a dedicated search index.
 
 ## Validation and behavior
 
@@ -88,4 +101,4 @@ yarn workspace api start
 
 Controllers handle HTTP input and responses; services call repositories; repositories own Mongoose queries. `app.ts` configures Express without opening a port, while `server.ts` manages startup and shutdown. Documentation reuses request validators and declares separate response schemas.
 
-This assessment API has no authentication, authorization, pagination, or rate limiting. All TODOs are shared. `/health` reports HTTP availability, not ongoing database readiness. The local Compose database has no authentication and is bound to loopback for development. Request bodies are limited to 100 KB.
+This assessment API has no authentication, authorization or rate limiting. All TODOs are shared. `/health` reports HTTP availability, not ongoing database readiness. The local Compose database has no authentication and is bound to loopback for development. Request bodies are limited to 100 KB.

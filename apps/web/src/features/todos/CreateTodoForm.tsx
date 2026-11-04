@@ -8,7 +8,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { createTodo } from "./todo.api";
 import { todoKeys } from "./todo.queries";
 
-export function CreateTodoForm() {
+export function CreateTodoForm({ onCreated }: { onCreated?: () => void }) {
   const queryClient = useQueryClient();
   const titleRef = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState("");
@@ -26,6 +26,7 @@ export function CreateTodoForm() {
       setTitle("");
       setDescription("");
       setDescriptionOpen(false);
+      onCreated?.();
 
       await queryClient.invalidateQueries({
         queryKey: todoKeys.all,

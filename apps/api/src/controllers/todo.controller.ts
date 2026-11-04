@@ -4,6 +4,7 @@ import { Todo } from '../models/todo.model.js';
 import * as todoService from '../services/todo.service.js';
 import {
   createTodoSchema,
+  listTodosQuerySchema,
   todoIdSchema,
   updateTodoSchema,
 } from '../validators/todo.validator.js';
@@ -30,9 +31,21 @@ export async function createTodo(req: Request, res: Response) {
   return res.status(201).json({ todo });
 }
 
-export async function listTodos(_req: Request, res: Response) {
-  const todos = await todoService.listTodos();
-  return res.status(200).json({ todos });
+export async function listTodos(req: Request, res: Response) {
+  const result = listTodosQuerySchema.safeParse(req.query);
+  if (!result.success) {
+    return res.status(400).json({
+      error: {
+        message: 'Invalid list parameters',
+        details: result.error.issues.map((issue) => ({
+          field: issue.path.join('.'),
+          message: issue.message,
+        })),
+      },
+    });
+  }
+  const resultPage = await todoService.listTodos(result.data);
+  return res.status(200).json(resultPage);
 }
 
 export async function updateTodo(req: Request, res: Response) {

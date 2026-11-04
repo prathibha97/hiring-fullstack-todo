@@ -27,18 +27,45 @@ async function apiFetch(url: string, options?: RequestInit): Promise<Response> {
   }
 }
 
-export async function getTodos(signal?: AbortSignal): Promise<Todo[]> {
-  if (!apiUrl) {
-    throw new Error("API URL is not configured");
-  }
+export type TodoListParams = {
+  page: number;
+  limit: number;
+  status: "all" | "active" | "completed";
+  search: string;
+};
 
-  const response = await apiFetch(`${apiUrl}/api/todos`, { signal });
+export type TodoPage = {
+  todos: Todo[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  counts: { all: number; active: number; completed: number };
+};
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch TODOs, please try again");
-  }
-  const data: { todos: Todo[] } = await response.json();
-  return data.todos;
+export const defaultTodoParams: TodoListParams = {
+  page: 1,
+  limit: 10,
+  status: "all",
+  search: "",
+};
+
+export async function getTodos(
+  params: TodoListParams,
+  signal?: AbortSignal,
+): Promise<TodoPage> {
+  if (!apiUrl) throw new Error("API URL is not configured");
+  const query = new URLSearchParams({
+    page: String(params.page),
+    limit: String(params.limit),
+    status: params.status,
+    search: params.search,
+  });
+  const response = await apiFetch(`${apiUrl}/api/todos?${query}`, { signal });
+  if (!response.ok) throw new Error("Failed to fetch TODOs, please try again");
+  return response.json();
 }
 
 export async function createTodo(input: CreateTodoInput) {

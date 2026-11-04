@@ -25,3 +25,10 @@ export const updateTodoSchema = createTodoSchema
       message: 'At least one field must be provided',
     },
   );
+
+export const listTodosQuerySchema = z.strictObject({
+  page: z.coerce.number().int().min(1).max(1_000_000).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(10),
+  status: z.enum(['all', 'active', 'completed']).default('all'),
+  search: z.string().trim().max(200).default(''),
+});

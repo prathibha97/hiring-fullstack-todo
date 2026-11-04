@@ -5,8 +5,8 @@ export async function createTodo(input: CreateTodoInput) {
   return todoRepository.createTodo(input);
 }
 
-export async function listTodos() {
-  return todoRepository.findTodos();
+export async function listTodos(input: todoRepository.ListTodosInput) {
+  return todoRepository.findTodos(input);
 }
 
 export async function updateTodo(

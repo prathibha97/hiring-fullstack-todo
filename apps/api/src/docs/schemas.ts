@@ -18,6 +18,17 @@ export const todoResponseSchema = z
 export const todoListResponseSchema = z
   .object({
     todos: z.array(todoResponseSchema),
+    pagination: z.object({
+      page: z.number().int().min(1),
+      limit: z.number().int().min(1).max(50),
+      total: z.number().int().min(0),
+      totalPages: z.number().int().min(1),
+    }),
+    counts: z.object({
+      all: z.number().int().min(0),
+      active: z.number().int().min(0),
+      completed: z.number().int().min(0),
+    }),
   })
   .meta({ id: 'TodoListResponse' });
 

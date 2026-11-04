@@ -79,3 +79,22 @@ describe('missing TODOs', () => {
     expect(response.status).toBe(404);
   });
 });
+
+describe('pagination parameters', () => {
+  it.each([
+    { page: '0' },
+    { page: '-1' },
+    { page: '1.5' },
+    { page: 'abc' },
+    { limit: '0' },
+    { limit: '51' },
+    { status: 'unknown' },
+    { search: 'a'.repeat(201) },
+    { page: ['1', '2'] },
+  ])('rejects invalid list parameters: %j', async (query) => {
+    const response = await request(app).get('/api/todos').query(query);
+    expect(response.status).toBe(400);
+    expect(response.body.error.message).toBe('Invalid list parameters');
+    expect(todoService.listTodos).not.toHaveBeenCalled();
+  });
+});

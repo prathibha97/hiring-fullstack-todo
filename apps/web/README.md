@@ -45,7 +45,8 @@ Open http://localhost:5173. Vite uses port 5173 and fails clearly if it is occup
 - Mark tasks done or pending using their checkbox.
 - Edit a task inline; Cancel discards edits.
 - Delete using the confirmation dialog; Cancel leaves the task intact.
-- Filter All, Active, or Completed from the sidebar or list toolbar; search matches titles and descriptions.
+- Filter All, Active, or Completed from the sidebar or list toolbar; search matches titles and descriptions across all pages.
+- Navigate using shadcn pagination, or choose 10, 20, or 50 tasks per page. Search, status, and page-size changes return to the first page. Sidebar counts always cover the full list.
 
 Titles are trimmed, required, and limited to 200 characters. Descriptions are limited to 2000 characters. The server also validates requests.
 
@@ -74,6 +75,6 @@ yarn test
 
 ## Assumptions and limitations
 
-This assessment has one shared task list with no sign-in or per-user ownership. Search/filtering happens in the browser over the full returned list; there is no pagination. Mutations refresh from the server rather than optimistically updating the list. A network failure can occur after a server has applied an operation; refresh before retrying an uncertain create or toggle. API response types are declared in TypeScript, not validated at runtime in the browser. There is no frontend automated test suite yet.
+This assessment has one shared task list with no sign-in or per-user ownership. Search, status filtering, and pagination happen on the server. Previous results remain visible while the next page loads, with task actions temporarily disabled. Creating a task returns to the first page of All tasks; deleting the last item on a page returns the last available page. Mutations refresh from the server rather than optimistically updating the list. A network failure can occur after a server has applied an operation; refresh before retrying an uncertain create or toggle. API response types are declared in TypeScript, not validated at runtime in the browser. There is no frontend automated test suite yet.
 
 API documentation: http://localhost:4000/api/docs/.
