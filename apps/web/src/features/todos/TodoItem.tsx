@@ -9,11 +9,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Check, Undo2, Pencil, Trash2, Loader2 } from "lucide-react";
+import { Pencil, Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { EditTodoForm } from "./EditTodoForm";
 import { deleteTodo, toggleTodoDone, type Todo } from "./todo.api";
 import { todoKeys } from "./todo.queries";
@@ -23,6 +23,7 @@ type TodoItemProps = {
 };
 
 export function TodoItem({ todo }: TodoItemProps) {
+  const editButtonRef = useRef<HTMLButtonElement>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
@@ -62,73 +63,72 @@ export function TodoItem({ todo }: TodoItemProps) {
     deleteMutation.mutate(todo._id);
   }
 
+  function closeEditor() {
+    setIsEditing(false);
+    requestAnimationFrame(() => editButtonRef.current?.focus());
+  }
+
   if (isEditing) {
     return (
-      <li className="rounded-lg border bg-card p-4">
-        <EditTodoForm todo={todo} onClose={() => setIsEditing(false)} />
+      <li className="task-row task-row-editing">
+        <EditTodoForm todo={todo} onClose={closeEditor} />
       </li>
     );
   }
 
   return (
-    <li className="space-y-3 rounded-lg border bg-card p-4">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0 space-y-2">
+    <li className={`task-row ${todo.done ? "task-row-completed" : ""}`}>
+      <div className="task-row-main">
+        <input
+          type="checkbox"
+          className="task-checkbox"
+          checked={todo.done}
+          disabled={isBusy}
+          onChange={() => toggleMutation.mutate(todo._id)}
+          aria-label={`Mark ${todo.title} as ${todo.done ? "pending" : "done"}`}
+        />
+        <div className="min-w-0 flex-1">
           <h2
-            className={`wrap-break-words font-medium ${
-              todo.done ? "text-muted-foreground line-through" : ""
-            }`}
+            className={`task-title ${todo.done ? "line-through text-muted-foreground" : ""}`}
           >
             {todo.title}
           </h2>
-
           {todo.description && (
-            <p className="whitespace-pre-wrap wrap-break-words text-sm text-muted-foreground">
-              {todo.description}
-            </p>
+            <p className="task-description">{todo.description}</p>
           )}
         </div>
-
-        <div className="flex shrink-0 flex-wrap gap-2">
+        <time
+          className="task-date"
+          dateTime={todo.createdAt}
+          title={`Created ${new Date(todo.createdAt).toLocaleString()}`}
+        >
+          {new Date(todo.createdAt).toLocaleDateString(undefined, {
+            month: "short",
+            day: "numeric",
+          })}
+        </time>
+        <div className="task-actions">
+          {toggleMutation.isPending && (
+            <Loader2
+              className="size-3.5 animate-spin text-muted-foreground"
+              aria-hidden="true"
+            />
+          )}
           <Button
-            variant="outline"
-            size="sm"
+            variant="ghost"
+            size="icon-sm"
             disabled={isBusy}
-            aria-pressed={todo.done}
-            aria-label={`Mark ${todo.title} as ${
-              todo.done ? "pending" : "done"
-            }`}
-            onClick={() => toggleMutation.mutate(todo._id)}
-          >
-            {toggleMutation.isPending ? (
-              <Loader2 className="size-4 animate-spin" aria-hidden="true" />
-            ) : todo.done ? (
-              <Undo2 className="size-4" aria-hidden="true" />
-            ) : (
-              <Check className="size-4" aria-hidden="true" />
-            )}
-            {toggleMutation.isPending
-              ? "Saving…"
-              : todo.done
-                ? "Mark pending"
-                : "Mark done"}
-          </Button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={isBusy}
+            ref={editButtonRef}
             aria-label={`Edit ${todo.title}`}
+            title="Edit task"
             onClick={() => {
               toggleMutation.reset();
               deleteMutation.reset();
               setIsEditing(true);
             }}
           >
-            <Pencil className="size-4" aria-hidden="true" />
-            Edit
+            <Pencil className="size-3.5" aria-hidden="true" />
           </Button>
-
           <AlertDialog
             open={deleteOpen}
             onOpenChange={(open) => {
@@ -139,11 +139,17 @@ export function TodoItem({ todo }: TodoItemProps) {
           >
             <AlertDialogTrigger
               disabled={isBusy}
-              render={<Button variant="destructive" size="sm" />}
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  className="task-delete"
+                />
+              }
               aria-label={`Delete ${todo.title}`}
             >
               <Trash2 className="size-4" aria-hidden="true" />
-              Delete
+              <span className="sr-only">Delete</span>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
@@ -182,9 +188,8 @@ export function TodoItem({ todo }: TodoItemProps) {
           </AlertDialog>
         </div>
       </div>
-
       {toggleMutation.isError && (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="mt-2 pl-7 text-xs text-destructive">
           {toggleMutation.error?.message}
         </p>
       )}

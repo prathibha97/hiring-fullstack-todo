@@ -23,7 +23,7 @@ If `.env` already exists, check its values instead of replacing it:
 
 ```dotenv
 PORT=4000
-CLIENT_URL=http://localhost:3000
+CLIENT_URL=http://localhost:5173
 MONGODB_URI=mongodb://127.0.0.1:27018/hiring_fullstack_todo
 ```
 

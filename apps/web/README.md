@@ -1,75 +1,79 @@
-# React + TypeScript + Vite
+# TODO frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript frontend built with Vite, Tailwind CSS, shadcn/ui (Base UI), Lucide icons, Sonner notifications, and TanStack Query. It communicates with the separate Express API over HTTP.
 
-Currently, two official plugins are available:
+## Requirements and setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Use Node.js 24+ and Yarn 4.17.1. Start Docker Desktop first. Run these commands from the repository root:
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```sh
+yarn install --immutable
+docker compose up -d --wait
+cp -n apps/api/.env.example apps/api/.env
+cp -n apps/web/.env.example apps/web/.env.local
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+Check the API environment file contains:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```dotenv
+PORT=4000
+CLIENT_URL=http://localhost:5173
+MONGODB_URI=mongodb://127.0.0.1:27018/hiring_fullstack_todo
 ```
+
+The frontend environment file should contain:
+
+```dotenv
+VITE_API_URL=http://localhost:4000
+```
+
+Start the two apps in separate terminals:
+
+```sh
+yarn workspace api dev
+```
+
+```sh
+yarn workspace web dev
+```
+
+Open http://localhost:5173. Vite uses port 5173 and fails clearly if it is occupied instead of silently moving to a port that the API's CORS configuration does not allow. Restart Vite after changing environment variables. Variables prefixed with `VITE_` are public browser configuration; never put credentials in them.
+
+## Usage
+
+- Create a task using the title field; expand Add description for optional details.
+- Mark tasks done or pending using their checkbox.
+- Edit a task inline; Cancel discards edits.
+- Delete using the confirmation dialog; Cancel leaves the task intact.
+- Filter All, Active, or Completed from the sidebar or list toolbar; search matches titles and descriptions.
+
+Titles are trimmed, required, and limited to 200 characters. Descriptions are limited to 2000 characters. The server also validates requests.
+
+## Structure and behavior
+
+`src/features/todos/todo.api.ts` owns HTTP requests. Query options provide stable keys and pass cancellation signals into fetch. TanStack Query caches server data, refreshes active lists after successful mutations, and exposes pending/error states. Components keep form values and UI state locally.
+
+Mutation controls are disabled while requests run. Failed creates and edits preserve entered values; failed deletes keep the dialog open. Toasts provide feedback, and inline messages remain available. A failed background refresh retains previously loaded tasks. Toggle mutations have automatic retries disabled because repeating a toggle reverses the value again.
+
+The Linear-inspired layout switches to a single column on small screens. Controls have accessible labels, keyboard focus styles, a skip link, focus management for inline editing, and larger targets on coarse-pointer devices. CSS transitions respect reduced-motion preferences. The shadcn confirmation dialog traps focus and returns it on cancel.
+
+## Checks
+
+```sh
+yarn workspace web build
+yarn workspace web lint
+```
+
+The build includes TypeScript checks. The current Vite starter's `typescript-eslint` package does not support the installed TypeScript 7 compiler, so lint currently fails before analyzing files. This compatibility issue remains to be resolved; the build passing is not a substitute for lint.
+
+Backend tests require Docker MongoDB:
+
+```sh
+yarn test
+```
+
+## Assumptions and limitations
+
+This assessment has one shared task list with no sign-in or per-user ownership. Search/filtering happens in the browser over the full returned list; there is no pagination. Mutations refresh from the server rather than optimistically updating the list. A network failure can occur after a server has applied an operation; refresh before retrying an uncertain create or toggle. API response types are declared in TypeScript, not validated at runtime in the browser. There is no frontend automated test suite yet.
+
+API documentation: http://localhost:4000/api/docs/.

@@ -1,6 +1,6 @@
 import { Save, X, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { useId, useState, type FormEvent } from "react";
+import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,11 @@ type EditTodoFormProps = {
 
 export function EditTodoForm({ todo, onClose }: EditTodoFormProps) {
   const id = useId();
+  const titleRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    titleRef.current?.focus();
+  }, []);
   const queryClient = useQueryClient();
   const [title, setTitle] = useState(todo.title);
   const [description, setDescription] = useState(todo.description);
@@ -23,7 +28,9 @@ export function EditTodoForm({ todo, onClose }: EditTodoFormProps) {
   const mutation = useMutation({
     mutationFn: (input: { title: string; description: string }) =>
       updateTodo(todo._id, input),
-    onError: (error) => toast.error(error.message),
+    onError: (error) => {
+      toast.error(error.message);
+    },
     onSuccess: async () => {
       toast.success("TODO updated");
       await queryClient.invalidateQueries({
@@ -34,6 +41,10 @@ export function EditTodoForm({ todo, onClose }: EditTodoFormProps) {
     },
   });
 
+  useEffect(() => {
+    if (mutation.isError) titleRef.current?.focus();
+  }, [mutation.isError]);
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -43,6 +54,7 @@ export function EditTodoForm({ todo, onClose }: EditTodoFormProps) {
 
     if (!trimmedTitle) {
       setTitleError("Title is required");
+      titleRef.current?.focus();
       return;
     }
 
@@ -55,7 +67,7 @@ export function EditTodoForm({ todo, onClose }: EditTodoFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="edit-form">
       <fieldset disabled={mutation.isPending} className="space-y-4">
         <legend className="mb-4 font-medium">Edit TODO</legend>
 
@@ -64,6 +76,7 @@ export function EditTodoForm({ todo, onClose }: EditTodoFormProps) {
             Title
           </label>
           <Input
+            ref={titleRef}
             id={`${id}-title`}
             value={title}
             onChange={(event) => {
