@@ -23,3 +23,8 @@ export async function createTodo(req: Request, res: Response) {
 
   return res.status(201).json(todo);
 }
+
+export async function listTodos(req: Request, res: Response) {
+  const todos = await todoService.listTodos();
+  return res.status(200).json({ todos });
+}

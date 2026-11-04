@@ -11,3 +11,7 @@ export async function createTodo(input: CreateTodoInput) {
     description: input.description,
   });
 }
+
+export async function findTodos() {
+  return TodoModel.find().sort({ createdAt: -1, _id: -1 }).lean().exec();
+}
