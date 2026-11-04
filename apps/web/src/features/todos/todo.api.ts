@@ -48,3 +48,20 @@ export async function createTodo(input: CreateTodoInput) {
   const data: { todo: Todo } = await response.json();
   return data.todo;
 }
+
+export async function toggleTodoDone(id: string): Promise<Todo> {
+  if (!apiUrl) {
+    throw new Error('API URL is not configured');
+  }
+
+  const response = await fetch(`${apiUrl}/api/todos/${id}/done`, {
+    method: 'PATCH',
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to update this TODO, please try again');
+  }
+
+  const data: { todo: Todo } = await response.json();
+  return data.todo;
+}

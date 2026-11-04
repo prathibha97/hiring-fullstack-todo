@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
 import { todosQueryOptions } from './todo.queries';
+import { TodoItem } from './TodoItem';
 
 export function TodoList() {
   const {
@@ -34,29 +35,10 @@ export function TodoList() {
   }
 
   return (
-    <ul className='space-y-3'>
-      {todos.map((todo) => (
-        <li key={todo._id} className='rounded-lg border bg-card p-4'>
-          <div className='flex items-start justify-between gap-4'>
-            <h2
-              className={`wrap-break-words font-medium ${
-                todo.done ? 'text-muted-foreground line-through' : ''
-              }`}
-            >
-              {todo.title}
-            </h2>
-            <span className='shrink-0 text-xs text-muted-foreground'>
-              {todo.done ? 'Completed' : 'Pending'}
-            </span>
-          </div>
-
-          {todo.description && (
-            <p className='mt-2 whitespace-pre-wrap wrap-break-words text-sm text-muted-foreground'>
-              {todo.description}
-            </p>
-          )}
-        </li>
-      ))}
-    </ul>
-  );
+  <ul className="space-y-3">
+    {todos.map((todo) => (
+      <TodoItem key={todo._id} todo={todo} />
+    ))}
+  </ul>
+);
 }
