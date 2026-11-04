@@ -2,13 +2,19 @@
 
 React + TypeScript frontend built with Vite, Tailwind CSS, shadcn/ui (Base UI), Lucide icons, Sonner notifications, and TanStack Query. It communicates with the separate Express API over HTTP.
 
+## Docker Compose
+
+From the repository root, run `docker compose up --build -d --wait`. Open http://localhost:8080 and Swagger at http://localhost:8080/api/docs/. No environment files are required for this mode. The [root README](../../README.md) covers ports, persistence, logs, and shutdown.
+
+The instructions below run the apps on the host with only MongoDB in Docker. Use `docker compose up -d --wait mongodb` for that mode.
+
 ## Requirements and setup
 
 Use Node.js 24+ and Yarn 4.17.1. Start Docker Desktop first. Run these commands from the repository root:
 
 ```sh
 yarn install --immutable
-docker compose up -d --wait
+docker compose up -d --wait mongodb
 cp -n apps/api/.env.example apps/api/.env
 cp -n apps/web/.env.example apps/web/.env.local
 ```
@@ -21,7 +27,7 @@ CLIENT_URL=http://localhost:5173
 MONGODB_URI=mongodb://127.0.0.1:27018/hiring_fullstack_todo
 ```
 
-The frontend environment file should contain:
+For the separate local Vite and API servers, the frontend environment file should contain:
 
 ```dotenv
 VITE_API_URL=http://localhost:4000
@@ -37,7 +43,7 @@ yarn workspace api dev
 yarn workspace web dev
 ```
 
-Open http://localhost:5173. Vite uses port 5173 and fails clearly if it is occupied instead of silently moving to a port that the API's CORS configuration does not allow. Restart Vite after changing environment variables. Variables prefixed with `VITE_` are public browser configuration; never put credentials in them.
+Open http://localhost:5173. Vite uses port 5173 and fails clearly if it is occupied instead of silently moving to a port that the API's CORS configuration does not allow. Restart Vite after changing environment variables. An unset or empty `VITE_API_URL` uses same-origin requests, which is the Docker/Nginx mode. Vite embeds this value at build time; changing a running static web container’s environment does not change the built app. Variables prefixed with `VITE_` are public browser configuration; never put credentials in them.
 
 ## Usage
 

@@ -64,3 +64,18 @@ it('preserves abort errors rather than presenting them as connection failures', 
     controller.signal.reason,
   );
 });
+
+it('uses same-origin requests when the API URL is empty', async () => {
+  vi.stubEnv('VITE_API_URL', '');
+  fetchMock.mockResolvedValue(
+    new Response(JSON.stringify({ todos: [] }), { status: 200 }),
+  );
+  try {
+    await getTodos(defaultTodoParams);
+    expect(fetchMock.mock.calls[0]?.[0]).toBe(
+      '/api/todos?page=1&limit=10&status=all&search=',
+    );
+  } finally {
+    vi.unstubAllEnvs();
+  }
+});

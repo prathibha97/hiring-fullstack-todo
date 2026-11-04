@@ -2,6 +2,12 @@
 
 Express 5 REST API with MongoDB persistence, Mongoose models, Zod validation, and generated OpenAPI documentation. The API uses TypeScript and Node ESM.
 
+## Docker Compose
+
+From the repository root, run `docker compose up --build -d --wait`. Open http://localhost:8080 and Swagger at http://localhost:8080/api/docs/. No environment files are required for this mode. The [root README](../../README.md) covers ports, persistence, logs, and shutdown.
+
+The instructions below run the apps on the host with only MongoDB in Docker. Use `docker compose up -d --wait mongodb` for that mode.
+
 ## Requirements
 
 - Node.js 24 or newer
@@ -15,7 +21,7 @@ Run these commands from the repository root:
 ```sh
 yarn install --immutable
 cp -n apps/api/.env.example apps/api/.env
-docker compose up -d --wait
+docker compose up -d --wait mongodb
 yarn workspace api dev
 ```
 
@@ -73,7 +79,7 @@ PUT accepts either editable field and preserves omitted fields; an empty descrip
 Start Docker MongoDB before running integration tests:
 
 ```sh
-docker compose up -d --wait
+docker compose up -d --wait mongodb
 yarn workspace api lint
 yarn workspace api check-types
 yarn workspace api build

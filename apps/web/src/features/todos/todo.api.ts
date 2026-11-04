@@ -32,8 +32,7 @@ async function apiFetch(
   path: string,
   options?: RequestInit,
 ): Promise<Response> {
-  const apiUrl = import.meta.env.VITE_API_URL;
-  if (!apiUrl) throw new Error('API URL is not configured');
+  const apiUrl = import.meta.env.VITE_API_URL ?? '';
   let response: Response;
   try {
     response = await fetch(

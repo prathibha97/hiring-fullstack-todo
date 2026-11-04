@@ -1,0 +1,12 @@
+.git
+**/node_modules
+**/dist
+**/coverage
+**/.turbo
+**/.next
+**/.env
+**/.env.*
+**/*.tsbuildinfo
+.yarn
+.DS_Store
+*.log
