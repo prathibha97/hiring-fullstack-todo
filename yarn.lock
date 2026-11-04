@@ -5,6 +5,17 @@ __metadata:
   version: 10
   cacheKey: 10c0
 
+"@asteasolutions/zod-to-openapi@npm:^9.1.0":
+  version: 9.1.0
+  resolution: "@asteasolutions/zod-to-openapi@npm:9.1.0"
+  dependencies:
+    openapi3-ts: "npm:^4.6.0"
+  peerDependencies:
+    zod: ^4.0.0
+  checksum: 10c0/a6bfbdeab046036ed5e8ba1d460e7c2fb4b780f0c3f6d36afe76cea29cd1b8fc33de00661c57b7835c1cb5235c192ab87ff339b0785f328dacfee6eb1396277f
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:^7.29.7":
   version: 7.29.7
   resolution: "@babel/code-frame@npm:7.29.7"
@@ -1410,6 +1421,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@scarf/scarf@npm:=1.4.0":
+  version: 1.4.0
+  resolution: "@scarf/scarf@npm:1.4.0"
+  checksum: 10c0/332118bb488e7a70eaad068fb1a33f016d30442fb0498b37a80cb425c1e741853a5de1a04dce03526ed6265481ecf744aa6e13f072178d19e6b94b19f623ae1c
+  languageName: node
+  linkType: hard
+
 "@standard-schema/spec@npm:^1.1.0":
   version: 1.1.0
   resolution: "@standard-schema/spec@npm:1.1.0"
@@ -1546,7 +1564,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:5":
+"@types/express@npm:*, @types/express@npm:5":
   version: 5.0.6
   resolution: "@types/express@npm:5.0.6"
   dependencies:
@@ -1651,7 +1669,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/serve-static@npm:^2":
+"@types/serve-static@npm:*, @types/serve-static@npm:^2":
   version: 2.2.0
   resolution: "@types/serve-static@npm:2.2.0"
   dependencies:
@@ -1680,6 +1698,16 @@ __metadata:
     "@types/methods": "npm:^1.1.4"
     "@types/superagent": "npm:^8.1.0"
   checksum: 10c0/c1ca876d591dd1cead0d5f0fd53d21b8f15a84bdb59a1229c95ada0a031fc64bb83a5ddd88fd9a247dd1af1b9aee39b9d56815176b62104676d4f4cb4a042370
+  languageName: node
+  linkType: hard
+
+"@types/swagger-ui-express@npm:^4.1.8":
+  version: 4.1.8
+  resolution: "@types/swagger-ui-express@npm:4.1.8"
+  dependencies:
+    "@types/express": "npm:*"
+    "@types/serve-static": "npm:*"
+  checksum: 10c0/9c9e8327c40376b98b6fbd5dd2d722b7b5473e5c168af809431f16b34c948d2d3d44ce2157d2066355e9926ba86416481a30cd1cbcdbb064dd2fedb28442a85a
   languageName: node
   linkType: hard
 
@@ -1927,12 +1955,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "api@workspace:apps/api"
   dependencies:
+    "@asteasolutions/zod-to-openapi": "npm:^9.1.0"
     "@repo/eslint-config": "workspace:*"
     "@repo/typescript-config": "workspace:*"
     "@types/cors": "npm:^2.8.19"
     "@types/express": "npm:5"
     "@types/node": "npm:^26.6.6"
     "@types/supertest": "npm:^7.2.1"
+    "@types/swagger-ui-express": "npm:^4.1.8"
     cors: "npm:^2.8.6"
     dotenv: "npm:^18.0.9"
     eslint: "npm:10.9.1"
@@ -1940,6 +1970,7 @@ __metadata:
     mongoose: "npm:^9.11.4"
     nodemon: "npm:^3.1.14"
     supertest: "npm:^7.3.1"
+    swagger-ui-express: "npm:^5.0.1"
     tsx: "npm:^4.23.15"
     typescript: "npm:7.0.2"
     vite: "npm:^8.3.5"
@@ -3801,6 +3832,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"openapi3-ts@npm:^4.6.0":
+  version: 4.6.2
+  resolution: "openapi3-ts@npm:4.6.2"
+  dependencies:
+    yaml: "npm:^2.9.1"
+  checksum: 10c0/9e6b58e1f6cef98d4252ee903755f1efe8e39fff23b79358a38e2f192f23579bd1949b93fd2080900940fc947ecd7693b7b1da377008226dffca3f9d856d3a3b
+  languageName: node
+  linkType: hard
+
 "optionator@npm:^0.9.3":
   version: 0.9.4
   resolution: "optionator@npm:0.9.4"
@@ -4424,6 +4464,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"swagger-ui-dist@npm:>=5.0.0":
+  version: 5.34.1
+  resolution: "swagger-ui-dist@npm:5.34.1"
+  dependencies:
+    "@scarf/scarf": "npm:=1.4.0"
+  checksum: 10c0/e840abba4c177facbc14d8e2f696aad36d951a94b8ec67e5affbf127bbb8dc31ba03bc6539877cb0f8a38626d9e8c6c01769025b08970076aa34429d41f244cd
+  languageName: node
+  linkType: hard
+
+"swagger-ui-express@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "swagger-ui-express@npm:5.0.1"
+  dependencies:
+    swagger-ui-dist: "npm:>=5.0.0"
+  peerDependencies:
+    express: ">=4.0.0 || >=5.0.0-beta"
+  checksum: 10c0/dbe9830caef7fe455241e44e74958bac62642997e4341c1b0f38a3d684d19a4a81b431217c656792d99f046a1b5f261abf7783ede0afe41098cd4450401f6fd1
+  languageName: node
+  linkType: hard
+
 "tar@npm:^7.5.7":
   version: 7.5.22
   resolution: "tar@npm:7.5.22"
@@ -4989,6 +5049,15 @@ __metadata:
   version: 5.0.0
   resolution: "yallist@npm:5.0.0"
   checksum: 10c0/a499c81ce6d4a1d260d4ea0f6d49ab4da09681e32c3f0472dee16667ed69d01dae63a3b81745a24bd78476ec4fcf856114cb4896ace738e01da34b2c42235416
+  languageName: node
+  linkType: hard
+
+"yaml@npm:^2.9.1":
+  version: 2.9.1
+  resolution: "yaml@npm:2.9.1"
+  bin:
+    yaml: bin.mjs
+  checksum: 10c0/9d06676ef02b89559a8b10a71882bd2cdae81e8393dc8dbc871615c3259475d9609ad973d19cb3c9e71e72d6206e3d1e7aa241c7e55f3d16fd2e77db305827d6
   languageName: node
   linkType: hard
 
