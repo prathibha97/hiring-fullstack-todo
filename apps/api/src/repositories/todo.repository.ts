@@ -33,3 +33,7 @@ export async function toggleTodoDone(id: string) {
     { updatePipeline: true, returnDocument: 'after' },
   ).exec();
 }
+
+export async function deleteTodo(id: string) {
+  return TodoModel.findByIdAndDelete(id).exec();
+}

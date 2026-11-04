@@ -19,3 +19,7 @@ export async function updateTodo(
 export async function toggleTodoDone(id: string) {
   return todoRepository.toggleTodoDone(id);
 }
+
+export async function deleteTodo(id: string) {
+  return todoRepository.deleteTodo(id);
+}

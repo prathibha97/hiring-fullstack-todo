@@ -95,3 +95,26 @@ export async function toggleTodoDone(req: Request, res: Response) {
   }
   return res.status(200).json({ todo });
 }
+
+export async function deleteTodo(req: Request, res: Response) {
+  const idResult = todoIdSchema.safeParse(req.params.id);
+
+  if (!idResult.success) {
+    return res.status(400).json({
+      error: {
+        message: 'Invalid TODO ID',
+      },
+    });
+  }
+
+  const todo = await todoService.deleteTodo(idResult.data);
+
+  if (!todo) {
+    return res.status(404).json({
+      error: {
+        message: 'TODO not found',
+      },
+    });
+  }
+  return res.status(204).end();
+}
