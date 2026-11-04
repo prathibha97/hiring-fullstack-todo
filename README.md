@@ -75,6 +75,20 @@ yarn workspace web format:check
 
 Frontend tests use Vitest, Testing Library, and jsdom. Backend tests cover validation, HTTP behavior, and real MongoDB integration in a unique test database. Tests do not modify development tasks.
 
+## Continuous integration
+
+GitHub Actions runs on pushes to `develop` and `main`, pull requests targeting either branch, and manual dispatch. The first job installs the locked dependencies, runs lint, strict type checks, frontend formatting, all tests against Docker MongoDB, and workspace builds. The second job builds and starts the full Compose stack, then checks the app assets, Swagger/OpenAPI, and TODO operations through Nginx. Both jobs clean up their temporary containers and volumes. No repository secrets, image publishing, or deployment are configured.
+
+To run the container smoke check locally after starting Compose:
+
+```sh
+node scripts/smoke-test.mjs
+```
+
+For a different web port, use `SMOKE_BASE_URL=http://localhost:8081 node scripts/smoke-test.mjs`. The script creates uniquely named tasks and removes only those tasks afterward. It checks HTTP integration, not browser rendering.
+
+See [demo preparation](docs/demo-preparation.md) for the recording sequence, code walkthrough, and submission checklist. After the first successful hosted CI run, the two job checks can be made required in the repository's branch protection settings.
+
 ## Structure
 
 - `apps/web`: React, TypeScript, Tailwind, shadcn/ui, TanStack Query, and Sonner. Feature components and HTTP/query logic live together under `src/features/todos`.
