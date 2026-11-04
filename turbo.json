@@ -25,7 +25,7 @@
     "api#dev": {
       "cache": false,
       "persistent": true,
-      "env": ["PORT", "CLIENT_URL", "NODE_ENV"]
+      "env": ["PORT", "CLIENT_URL", "NODE_ENV", "MONGODB_URI"]
     }
   }
 }

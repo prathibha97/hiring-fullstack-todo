@@ -1,4 +1,5 @@
-import type { ErrorRequestHandler } from "express";
+import type { ErrorRequestHandler } from 'express';
+import { AppError } from '../errors/app-error.js';
 
 export const errorHandler: ErrorRequestHandler = (
   error: unknown,
@@ -13,20 +14,27 @@ export const errorHandler: ErrorRequestHandler = (
 
   // Body-parser errors must not expose the submitted body or parser details.
   const type =
-    error !== null && typeof error === "object" && "type" in error
+    error !== null && typeof error === 'object' && 'type' in error
       ? error.type
       : undefined;
 
-  if (type === "entity.parse.failed") {
-    res.status(400).json({ error: { message: "Invalid JSON request body" } });
+  if (type === 'entity.parse.failed') {
+    res.status(400).json({ error: { message: 'Invalid JSON request body' } });
     return;
   }
 
-  if (type === "entity.too.large") {
-    res.status(413).json({ error: { message: "Request body is too large" } });
+  if (type === 'entity.too.large') {
+    res.status(413).json({ error: { message: 'Request body is too large' } });
     return;
   }
 
-  console.error("Unhandled request error:", error);
-  res.status(500).json({ error: { message: "Internal server error" } });
+  if (error instanceof AppError) {
+    res.status(error.statusCode).json({
+      error: { message: error.message },
+    });
+    return;
+  }
+
+  console.error('Unhandled request error:', error);
+  res.status(500).json({ error: { message: 'Internal server error' } });
 };

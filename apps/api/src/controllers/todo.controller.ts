@@ -1,4 +1,6 @@
 import { Request, Response } from 'express';
+import { AppError } from '../errors/app-error.js';
+import { Todo } from '../models/todo.model.js';
 import * as todoService from '../services/todo.service.js';
 import {
   createTodoSchema,
@@ -34,15 +36,7 @@ export async function listTodos(_req: Request, res: Response) {
 }
 
 export async function updateTodo(req: Request, res: Response) {
-  const idResult = todoIdSchema.safeParse(req.params.id);
-
-  if (!idResult.success) {
-    return res.status(400).json({
-      error: {
-        message: 'Invalid TODO ID',
-      },
-    });
-  }
+  const validatedId = validateTodoId(req.params.id);
 
   const bodyResult = updateTodoSchema.safeParse(req.body);
 
@@ -58,63 +52,47 @@ export async function updateTodo(req: Request, res: Response) {
     });
   }
 
-  const todo = await todoService.updateTodo(idResult.data, {
+  const todo = await todoService.updateTodo(validatedId, {
     title: bodyResult.data.title,
     description: bodyResult.data.description,
   });
 
-  if (!todo) {
-    return res.status(404).json({
-      error: {
-        message: 'TODO not found',
-      },
-    });
-  }
+  checkTodoExists(todo);
+
   return res.status(200).json({ todo });
 }
 
 export async function toggleTodoDone(req: Request, res: Response) {
-  const idResult = todoIdSchema.safeParse(req.params.id);
+  const validatedId = validateTodoId(req.params.id);
 
-  if (!idResult.success) {
-    return res.status(400).json({
-      error: {
-        message: 'Invalid TODO ID',
-      },
-    });
-  }
+  const todo = await todoService.toggleTodoDone(validatedId);
 
-  const todo = await todoService.toggleTodoDone(idResult.data);
+  checkTodoExists(todo);
 
-  if (!todo) {
-    return res.status(404).json({
-      error: {
-        message: 'TODO not found',
-      },
-    });
-  }
   return res.status(200).json({ todo });
 }
 
 export async function deleteTodo(req: Request, res: Response) {
-  const idResult = todoIdSchema.safeParse(req.params.id);
+  const validatedId = validateTodoId(req.params.id);
 
-  if (!idResult.success) {
-    return res.status(400).json({
-      error: {
-        message: 'Invalid TODO ID',
-      },
-    });
-  }
+  const todo = await todoService.deleteTodo(validatedId);
 
-  const todo = await todoService.deleteTodo(idResult.data);
-
-  if (!todo) {
-    return res.status(404).json({
-      error: {
-        message: 'TODO not found',
-      },
-    });
-  }
+  checkTodoExists(todo);
+  
   return res.status(204).end();
+}
+
+function validateTodoId(id: string | string[] | undefined): string {
+  const result = todoIdSchema.safeParse(id);
+  if (!result.success) {
+    throw new AppError('Invalid TODO ID', 400);
+  }
+  return result.data;
+}
+
+function checkTodoExists(todo: Todo | null) {
+  if (!todo) {
+    throw new AppError('TODO not found', 404);
+  }
+  return todo;
 }
