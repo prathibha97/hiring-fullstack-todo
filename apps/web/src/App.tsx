@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { CreateTodoForm } from './features/todos/CreateTodoForm';
 import { getTodos, type Todo } from './features/todos/todo.api';
 import { TodoList } from './features/todos/TodoList';
 
@@ -26,6 +27,7 @@ function App() {
         </p>
       </header>
 
+      <CreateTodoForm />
       <TodoList />
     </main>
   );

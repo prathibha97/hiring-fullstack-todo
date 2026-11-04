@@ -39,7 +39,7 @@ export function TodoList() {
         <li key={todo._id} className='rounded-lg border bg-card p-4'>
           <div className='flex items-start justify-between gap-4'>
             <h2
-              className={`break-words font-medium ${
+              className={`wrap-break-words font-medium ${
                 todo.done ? 'text-muted-foreground line-through' : ''
               }`}
             >
@@ -51,7 +51,7 @@ export function TodoList() {
           </div>
 
           {todo.description && (
-            <p className='mt-2 whitespace-pre-wrap break-words text-sm text-muted-foreground'>
+            <p className='mt-2 whitespace-pre-wrap wrap-break-words text-sm text-muted-foreground'>
               {todo.description}
             </p>
           )}
