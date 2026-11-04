@@ -15,3 +15,7 @@ export async function updateTodo(
 ) {
   return todoRepository.updateTodo(id, input);
 }
+
+export async function toggleTodoDone(id: string) {
+  return todoRepository.toggleTodoDone(id);
+}

@@ -25,3 +25,11 @@ export async function updateTodo(id: string, input: UpdateTodoInput) {
     { new: true, runValidators: true },
   ).exec();
 }
+
+export async function toggleTodoDone(id: string) {
+  return TodoModel.findByIdAndUpdate(
+    id,
+    [{ $set: { done: { $not: ['$done'] } } }],
+    { updatePipeline: true, returnDocument: 'after' },
+  ).exec();
+}
