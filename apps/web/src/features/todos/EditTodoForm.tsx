@@ -1,12 +1,12 @@
-import { Save, X, Loader2 } from "lucide-react";
-import { toast } from "sonner";
-import { useEffect, useId, useRef, useState, type FormEvent } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { updateTodo, type Todo } from "./todo.api";
-import { todoKeys } from "./todo.queries";
+import { Save, X, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { updateTodo, type Todo } from './todo.api';
+import { todoKeys } from './todo.queries';
 
 type EditTodoFormProps = {
   todo: Todo;
@@ -32,7 +32,7 @@ export function EditTodoForm({ todo, onClose }: EditTodoFormProps) {
       toast.error(error.message);
     },
     onSuccess: async () => {
-      toast.success("TODO updated");
+      toast.success('TODO updated');
       await queryClient.invalidateQueries({
         queryKey: todoKeys.all,
       });
@@ -53,7 +53,7 @@ export function EditTodoForm({ todo, onClose }: EditTodoFormProps) {
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
-      setTitleError("Title is required");
+      setTitleError('Title is required');
       titleRef.current?.focus();
       return;
     }
@@ -125,7 +125,7 @@ export function EditTodoForm({ todo, onClose }: EditTodoFormProps) {
             ) : (
               <Save className="size-4" aria-hidden="true" />
             )}
-            {mutation.isPending ? "Saving…" : "Save changes"}
+            {mutation.isPending ? 'Saving…' : 'Save changes'}
           </Button>
           <Button type="button" variant="outline" onClick={onClose}>
             <X className="size-4" aria-hidden="true" />

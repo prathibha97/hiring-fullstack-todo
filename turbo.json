@@ -30,6 +30,15 @@
     "api#test": {
       "cache": false,
       "env": ["MONGODB_TEST_URI", "CLIENT_URL", "NODE_ENV"]
+    },
+    "web#test": {
+      "cache": false
+    },
+    "web#build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**"],
+      "env": ["VITE_API_URL"]
     }
   }
 }

@@ -42,16 +42,16 @@ export function TodoPagination({
   };
 
   return (
-    <div className='pagination-footer'>
-      <div className='pagination-meta'>
-        <p role='status'>
+    <div className="pagination-footer">
+      <div className="pagination-meta">
+        <p role="status">
           {total ? (page - 1) * limit + 1 : 0}–{Math.min(page * limit, total)}{' '}
           of {total}
         </p>
-        <label className='page-size-label'>
+        <label className="page-size-label">
           Per page
           <select
-            aria-label='Tasks per page'
+            aria-label="Tasks per page"
             value={limit}
             disabled={busy}
             onChange={(event) => onLimitChange(Number(event.target.value))}
@@ -65,8 +65,8 @@ export function TodoPagination({
         </label>
       </div>
       <Pagination
-        aria-label='Task pagination'
-        className='mx-0 w-auto justify-start sm:justify-end'
+        aria-label="Task pagination"
+        className="mx-0 w-auto justify-start sm:justify-end"
       >
         <PaginationContent>
           <PaginationItem>
@@ -84,7 +84,7 @@ export function TodoPagination({
                   {...linkProps(value)}
                   isActive={value === page}
                   aria-label={`Page ${value}`}
-                  size='icon-sm'
+                  size="icon-sm"
                 >
                   {value}
                 </PaginationLink>

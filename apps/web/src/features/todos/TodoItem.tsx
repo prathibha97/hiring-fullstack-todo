@@ -8,15 +8,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Pencil, Trash2, Loader2 } from "lucide-react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRef, useState } from "react";
-import { EditTodoForm } from "./EditTodoForm";
-import { deleteTodo, toggleTodoDone, type Todo } from "./todo.api";
-import { todoKeys } from "./todo.queries";
+} from '@/components/ui/alert-dialog';
+import { Pencil, Trash2, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRef, useState } from 'react';
+import { EditTodoForm } from './EditTodoForm';
+import { deleteTodo, toggleTodoDone, type Todo } from './todo.api';
+import { todoKeys } from './todo.queries';
 
 type TodoItemProps = {
   todo: Todo;
@@ -35,7 +35,7 @@ export function TodoItem({ todo }: TodoItemProps) {
     onError: (error) => toast.error(error.message),
     onSuccess: async (updatedTodo) => {
       toast.success(
-        updatedTodo.done ? "TODO completed" : "TODO marked pending",
+        updatedTodo.done ? 'TODO completed' : 'TODO marked pending',
       );
       await queryClient.invalidateQueries({
         queryKey: todoKeys.all,
@@ -49,7 +49,7 @@ export function TodoItem({ todo }: TodoItemProps) {
     onError: (error) => toast.error(error.message),
     onSuccess: async () => {
       setDeleteOpen(false);
-      toast.success("TODO deleted");
+      toast.success('TODO deleted');
       await queryClient.invalidateQueries({
         queryKey: todoKeys.all,
       });
@@ -77,7 +77,7 @@ export function TodoItem({ todo }: TodoItemProps) {
   }
 
   return (
-    <li className={`task-row ${todo.done ? "task-row-completed" : ""}`}>
+    <li className={`task-row ${todo.done ? 'task-row-completed' : ''}`}>
       <div className="task-row-main">
         <input
           type="checkbox"
@@ -85,11 +85,11 @@ export function TodoItem({ todo }: TodoItemProps) {
           checked={todo.done}
           disabled={isBusy}
           onChange={() => toggleMutation.mutate(todo._id)}
-          aria-label={`Mark ${todo.title} as ${todo.done ? "pending" : "done"}`}
+          aria-label={`Mark ${todo.title} as ${todo.done ? 'pending' : 'done'}`}
         />
         <div className="min-w-0 flex-1">
           <h2
-            className={`task-title ${todo.done ? "line-through text-muted-foreground" : ""}`}
+            className={`task-title ${todo.done ? 'line-through text-muted-foreground' : ''}`}
           >
             {todo.title}
           </h2>
@@ -103,8 +103,8 @@ export function TodoItem({ todo }: TodoItemProps) {
           title={`Created ${new Date(todo.createdAt).toLocaleString()}`}
         >
           {new Date(todo.createdAt).toLocaleDateString(undefined, {
-            month: "short",
-            day: "numeric",
+            month: 'short',
+            day: 'numeric',
           })}
         </time>
         <div className="task-actions">
@@ -181,7 +181,7 @@ export function TodoItem({ todo }: TodoItemProps) {
                   ) : (
                     <Trash2 className="size-4" aria-hidden="true" />
                   )}
-                  {deleteMutation.isPending ? "Deleting…" : "Delete TODO"}
+                  {deleteMutation.isPending ? 'Deleting…' : 'Delete TODO'}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>

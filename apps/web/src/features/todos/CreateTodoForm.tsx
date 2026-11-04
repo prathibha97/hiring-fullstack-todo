@@ -1,18 +1,18 @@
-import { Plus, Loader2, AlignLeft } from "lucide-react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef, useState, type FormEvent } from "react";
-import { createTodo } from "./todo.api";
-import { todoKeys } from "./todo.queries";
+import { Plus, Loader2, AlignLeft } from 'lucide-react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { createTodo } from './todo.api';
+import { todoKeys } from './todo.queries';
 
 export function CreateTodoForm({ onCreated }: { onCreated?: () => void }) {
   const queryClient = useQueryClient();
   const titleRef = useRef<HTMLInputElement>(null);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [descriptionOpen, setDescriptionOpen] = useState(false);
   const [titleError, setTitleError] = useState<string | null>(null);
 
@@ -22,9 +22,9 @@ export function CreateTodoForm({ onCreated }: { onCreated?: () => void }) {
       toast.error(error.message);
     },
     onSuccess: async () => {
-      toast.success("TODO added");
-      setTitle("");
-      setDescription("");
+      toast.success('TODO added');
+      setTitle('');
+      setDescription('');
       setDescriptionOpen(false);
       onCreated?.();
 
@@ -46,7 +46,7 @@ export function CreateTodoForm({ onCreated }: { onCreated?: () => void }) {
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
-      setTitleError("Title is required");
+      setTitleError('Title is required');
       titleRef.current?.focus();
       return;
     }
@@ -82,7 +82,7 @@ export function CreateTodoForm({ onCreated }: { onCreated?: () => void }) {
               required
               maxLength={200}
               aria-invalid={Boolean(titleError)}
-              aria-describedby={titleError ? "todo-title-error" : undefined}
+              aria-describedby={titleError ? 'todo-title-error' : undefined}
             />
           </div>
           <Button type="submit" className="h-10 px-4">
@@ -91,7 +91,7 @@ export function CreateTodoForm({ onCreated }: { onCreated?: () => void }) {
             ) : (
               <Plus className="size-4" aria-hidden="true" />
             )}
-            {mutation.isPending ? "Adding…" : "Add"}
+            {mutation.isPending ? 'Adding…' : 'Add'}
           </Button>
         </div>
         {titleError && (
@@ -112,10 +112,10 @@ export function CreateTodoForm({ onCreated }: { onCreated?: () => void }) {
         >
           <AlignLeft className="size-3.5" aria-hidden="true" />
           {descriptionOpen
-            ? "Hide description"
+            ? 'Hide description'
             : description
-              ? "Edit description"
-              : "Add description"}
+              ? 'Edit description'
+              : 'Add description'}
         </button>
         <div
           id="task-description-field"

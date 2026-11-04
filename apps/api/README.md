@@ -80,7 +80,7 @@ yarn workspace api build
 yarn test
 ```
 
-`yarn test` runs API tests through Turbo with caching disabled. `yarn workspace api test` runs the same suite directly; `yarn workspace api test:watch` watches for changes. Tests cover validation, controller error responses, and database CRUD, including concurrent toggles.
+`yarn test` runs API and frontend tests through Turbo with caching disabled. `yarn workspace api test` runs the same suite directly; `yarn workspace api test:watch` watches for changes. Tests cover validation, controller error responses, and database CRUD, including concurrent toggles.
 
 Integration tests use MongoDB at `mongodb://127.0.0.1:27018` by default. To use a different test server:
 
