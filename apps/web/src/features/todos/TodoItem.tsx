@@ -1,5 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import { EditTodoForm } from './EditTodoForm';
 import { deleteTodo, toggleTodoDone, type Todo } from './todo.api';
 import { todoKeys } from './todo.queries';
 
@@ -8,6 +10,8 @@ type TodoItemProps = {
 };
 
 export function TodoItem({ todo }: TodoItemProps) {
+  const [isEditing, setIsEditing] = useState(false);
+
   const queryClient = useQueryClient();
 
   const toggleMutation = useMutation({
@@ -37,6 +41,14 @@ export function TodoItem({ todo }: TodoItemProps) {
     if (window.confirm('Are you sure you want to delete this todo?')) {
       deleteMutation.mutate(todo._id);
     }
+  }
+
+  if (isEditing) {
+    return (
+      <li className='rounded-lg border bg-card p-4'>
+        <EditTodoForm todo={todo} onClose={() => setIsEditing(false)} />
+      </li>
+    );
   }
 
   return (
@@ -74,6 +86,20 @@ export function TodoItem({ todo }: TodoItemProps) {
               : todo.done
                 ? 'Mark pending'
                 : 'Mark done'}
+          </Button>
+
+          <Button
+            variant='outline'
+            size='sm'
+            disabled={isBusy}
+            aria-label={`Edit ${todo.title}`}
+            onClick={() => {
+              toggleMutation.reset();
+              deleteMutation.reset();
+              setIsEditing(true);
+            }}
+          >
+            Edit
           </Button>
 
           <Button

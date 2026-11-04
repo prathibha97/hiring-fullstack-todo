@@ -12,6 +12,8 @@ export type CreateTodoInput = {
   description?: string;
 };
 
+export type UpdateTodoInput = Partial<CreateTodoInput>;
+
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export async function getTodos(signal?: AbortSignal): Promise<Todo[]> {
@@ -43,6 +45,30 @@ export async function createTodo(input: CreateTodoInput) {
 
   if (!response.ok) {
     throw new Error('Failed to create your TODO, please try again');
+  }
+
+  const data: { todo: Todo } = await response.json();
+  return data.todo;
+}
+
+export async function updateTodo(
+  id: string,
+  input: UpdateTodoInput,
+): Promise<Todo> {
+  if (!apiUrl) {
+    throw new Error('API URL is not configured');
+  }
+
+  const response = await fetch(`${apiUrl}/api/todos/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(input),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to update this TODO, please try again');
   }
 
   const data: { todo: Todo } = await response.json();
