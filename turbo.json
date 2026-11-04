@@ -16,6 +16,16 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "api#build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**"]
+    },
+    "api#dev": {
+      "cache": false,
+      "persistent": true,
+      "env": ["PORT", "CLIENT_URL", "NODE_ENV"]
     }
   }
 }
