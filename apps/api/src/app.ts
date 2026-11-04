@@ -1,6 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 import { errorHandler } from './middleware/error-handler.js';
+import { todoRouter } from './routes/todo.routes.js';
 
 export const app = express();
 
@@ -24,7 +25,7 @@ app.get('/health', (_req, res) =>
   }),
 );
 
-//TODO: Register todo routes before 404 handler
+app.use('/api/todos', todoRouter);
 
 app.use((_req, res) => {
   res.status(404).json({
