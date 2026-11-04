@@ -6,20 +6,20 @@ import {
   disconnectFromDatabase,
 } from './database/connection.js';
 
-const port = z.coerce
-  .number()
-  .int()
-  .min(1)
-  .max(65535)
-  .default(4000)
-  .parse(process.env.PORT);
-
-const mongoUri = z.string().url().parse(process.env.MONGODB_URI);
-
 async function startServer() {
-  const server = app.listen(port);
+  const port = z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(65535)
+    .default(4000)
+    .parse(process.env.PORT);
+
+  const mongoUri = z.string().url().parse(process.env.MONGODB_URI);
 
   await connectToDatabase(mongoUri);
+
+  const server = app.listen(port);
 
   server.on('listening', () => {
     console.log(`Server listening on http://localhost:${port}`);
@@ -49,20 +49,22 @@ async function startServer() {
       console.error('Shutdown timed out');
       process.exitCode = 1;
       server.closeAllConnections();
+      process.exit(1);
     }, 10_000);
     timeout.unref();
 
     server.close((error) => {
-      clearTimeout(timeout);
       if (error) {
         console.error('Failed to shutdown server:', error);
         process.exitCode = 1;
       }
 
-      void disconnectFromDatabase().catch(() => {
-        console.error('Failed to disconnect from database');
-        process.exitCode = 1;
-      });
+      void disconnectFromDatabase()
+        .catch(() => {
+          console.error('Failed to disconnect from database');
+          process.exitCode = 1;
+        })
+        .finally(() => clearTimeout(timeout));
     });
   }
 
@@ -76,7 +78,7 @@ void startServer().catch(async () => {
 
   try {
     await disconnectFromDatabase();
-  } catch (error) {
+  } catch {
     console.error('Failed to disconnect from database');
   }
 });

@@ -22,7 +22,7 @@ export async function updateTodo(id: string, input: UpdateTodoInput) {
   return TodoModel.findByIdAndUpdate(
     id,
     { $set: input },
-    { new: true, runValidators: true },
+    { returnDocument: 'after', runValidators: true },
   ).exec();
 }
 

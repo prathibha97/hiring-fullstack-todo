@@ -1,5 +1,5 @@
-import { randomUUID } from 'node:crypto';
 import mongoose from 'mongoose';
+import { randomUUID } from 'node:crypto';
 import request from 'supertest';
 import { afterAll, beforeAll, beforeEach, expect, it } from 'vitest';
 import { app } from '../src/app.js';
@@ -42,7 +42,7 @@ async function createTodo() {
 
   expect(response.status).toBe(201);
 
-  return response.body;
+  return response.body.todo;
 }
 
 it('creates a TODO, persists it, and includes it in the list', async () => {
@@ -52,7 +52,7 @@ it('creates a TODO, persists it, and includes it in the list', async () => {
   });
 
   expect(created.status).toBe(201);
-  expect(created.body).toMatchObject({
+  expect(created.body.todo).toMatchObject({
     _id: expect.any(String),
     title: 'Buy milk',
     description: 'For breakfast',
@@ -61,7 +61,7 @@ it('creates a TODO, persists it, and includes it in the list', async () => {
     updatedAt: expect.any(String),
   });
 
-  const saved = await TodoModel.findById(created.body._id).lean();
+  const saved = await TodoModel.findById(created.body.todo._id).lean();
 
   expect(saved).toMatchObject({
     title: 'Buy milk',
@@ -74,7 +74,7 @@ it('creates a TODO, persists it, and includes it in the list', async () => {
   expect(listed.status).toBe(200);
   expect(listed.body.todos).toHaveLength(1);
   expect(listed.body.todos[0]).toMatchObject({
-    _id: created.body._id,
+    _id: created.body.todo._id,
     title: 'Buy milk',
     done: false,
   });

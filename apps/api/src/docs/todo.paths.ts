@@ -9,7 +9,6 @@ import {
   errorResponseSchema,
   todoItemResponseSchema,
   todoListResponseSchema,
-  todoResponseSchema,
 } from './schemas.js';
 
 function jsonResponse(description: string, schema: z.ZodType) {
@@ -78,7 +77,7 @@ export function registerTodoPaths(registry: OpenAPIRegistry) {
       },
     },
     responses: {
-      201: jsonResponse('TODO created', todoResponseSchema),
+      201: jsonResponse('TODO created', todoItemResponseSchema),
       400: badRequest,
       413: bodyTooLarge,
       500: serverError,

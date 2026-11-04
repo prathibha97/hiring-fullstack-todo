@@ -26,6 +26,10 @@
       "cache": false,
       "persistent": true,
       "env": ["PORT", "CLIENT_URL", "NODE_ENV", "MONGODB_URI"]
+    },
+    "api#test": {
+      "cache": false,
+      "env": ["MONGODB_TEST_URI", "CLIENT_URL", "NODE_ENV"]
     }
   }
 }

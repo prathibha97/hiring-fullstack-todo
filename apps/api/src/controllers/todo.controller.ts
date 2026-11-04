@@ -27,7 +27,7 @@ export async function createTodo(req: Request, res: Response) {
     description: result.data.description,
   });
 
-  return res.status(201).json(todo);
+  return res.status(201).json({ todo });
 }
 
 export async function listTodos(_req: Request, res: Response) {
@@ -78,7 +78,7 @@ export async function deleteTodo(req: Request, res: Response) {
   const todo = await todoService.deleteTodo(validatedId);
 
   checkTodoExists(todo);
-  
+
   return res.status(204).end();
 }
 
