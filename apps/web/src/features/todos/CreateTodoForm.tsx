@@ -1,22 +1,26 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState, type FormEvent } from 'react';
-import { createTodo } from './todo.api';
-import { todoKeys } from './todo.queries';
+import { Plus, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, type FormEvent } from "react";
+import { createTodo } from "./todo.api";
+import { todoKeys } from "./todo.queries";
 
 export function CreateTodoForm() {
   const queryClient = useQueryClient();
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [titleError, setTitleError] = useState<string | null>(null);
 
   const mutation = useMutation({
     mutationFn: createTodo,
+    onError: (error) => toast.error(error.message),
     onSuccess: async () => {
-      setTitle('');
-      setDescription('');
+      toast.success("TODO added");
+      setTitle("");
+      setDescription("");
 
       await queryClient.invalidateQueries({
         queryKey: todoKeys.all,
@@ -32,7 +36,7 @@ export function CreateTodoForm() {
     const trimmedTitle = title.trim();
 
     if (!trimmedTitle) {
-      setTitleError('Title is required');
+      setTitleError("Title is required");
       return;
     }
 
@@ -45,16 +49,16 @@ export function CreateTodoForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className='rounded-lg border p-4'>
-      <fieldset disabled={mutation.isPending} className='space-y-4'>
-        <legend className='mb-4 font-medium'>Add a TODO</legend>
+    <form onSubmit={handleSubmit} className="rounded-lg border p-4">
+      <fieldset disabled={mutation.isPending} className="space-y-4">
+        <legend className="mb-4 font-medium">Add a TODO</legend>
 
-        <div className='space-y-2'>
-          <label htmlFor='todo-title' className='text-sm font-medium'>
+        <div className="space-y-2">
+          <label htmlFor="todo-title" className="text-sm font-medium">
             Title
           </label>
           <Input
-            id='todo-title'
+            id="todo-title"
             value={title}
             onChange={(event) => {
               setTitle(event.target.value);
@@ -63,25 +67,25 @@ export function CreateTodoForm() {
             required
             maxLength={200}
             aria-invalid={Boolean(titleError)}
-            aria-describedby={titleError ? 'todo-title-error' : undefined}
+            aria-describedby={titleError ? "todo-title-error" : undefined}
           />
           {titleError && (
             <p
-              id='todo-title-error'
-              role='alert'
-              className='text-sm text-destructive'
+              id="todo-title-error"
+              role="alert"
+              className="text-sm text-destructive"
             >
               {titleError}
             </p>
           )}
         </div>
 
-        <div className='space-y-2'>
-          <label htmlFor='todo-description' className='text-sm font-medium'>
+        <div className="space-y-2">
+          <label htmlFor="todo-description" className="text-sm font-medium">
             Description (optional)
           </label>
           <Textarea
-            id='todo-description'
+            id="todo-description"
             value={description}
             onChange={(event) => setDescription(event.target.value)}
             maxLength={2000}
@@ -90,13 +94,18 @@ export function CreateTodoForm() {
         </div>
 
         {mutation.isError && (
-          <p role='alert' className='text-sm text-destructive'>
+          <p role="alert" className="text-sm text-destructive">
             {mutation.error.message}
           </p>
         )}
 
-        <Button type='submit'>
-          {mutation.isPending ? 'Adding…' : 'Add TODO'}
+        <Button type="submit">
+          {mutation.isPending ? (
+            <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+          ) : (
+            <Plus className="size-4" aria-hidden="true" />
+          )}
+          {mutation.isPending ? "Adding…" : "Add TODO"}
         </Button>
       </fieldset>
     </form>
