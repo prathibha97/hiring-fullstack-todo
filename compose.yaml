@@ -37,6 +37,8 @@ services:
       retries: 10
       start_period: 10s
     stop_grace_period: 15s
+    ports:
+      - "127.0.0.1:4000:4000"
 
   web:
     build:
