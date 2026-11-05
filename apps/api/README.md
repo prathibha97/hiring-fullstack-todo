@@ -4,11 +4,11 @@ Express 5 REST API with MongoDB persistence, Mongoose models, Zod validation, an
 
 ## Docker Compose
 
-From the repository root, run `docker compose up --build -d --wait`. Open http://localhost:8080 and Swagger at http://localhost:8080/api/docs/. No environment files are required for this mode. The [root README](../../README.md) covers ports, persistence, logs, and shutdown.
+From the repository root, run `docker compose up --build -d --wait`. Open http://localhost:8080 and Swagger at http://localhost:8080/api/docs/. The API is also directly available at http://localhost:4000/api/todos. No environment files are required for this mode. The [root README](../../README.md) covers ports, persistence, logs, and shutdown.
 
 The instructions below run the apps on the host with only MongoDB in Docker. Use `docker compose up -d --wait mongodb` for that mode.
 
-## Requirements
+## Requirements for host development
 
 - Node.js 24 or newer
 - Yarn 4.17.1
@@ -35,7 +35,7 @@ MONGODB_URI=mongodb://127.0.0.1:27018/hiring_fullstack_todo
 
 The port must be an integer from 1 to 65535. `CLIENT_URL` is the browser origin allowed by CORS. Keep local `.env` files untracked.
 
-MongoDB is exposed only on this Mac at port 27018, avoiding conflicts with a local MongoDB installation. The Compose named volume retains data across container restarts. Run `docker compose down` to stop MongoDB while retaining its data. The database appears after the first write.
+MongoDB is exposed only on the host at port 27018, avoiding conflicts with a local MongoDB installation. The Compose named volume retains data across container restarts. Run `docker compose down` to stop MongoDB while retaining its data. The database appears after the first write.
 
 The API connects to MongoDB before accepting HTTP requests. If initial database selection fails after five seconds, startup fails. On SIGINT or SIGTERM, it drains HTTP requests and disconnects MongoDB; shutdown has a ten-second deadline.
 
@@ -86,7 +86,7 @@ yarn workspace api build
 yarn test
 ```
 
-`yarn test` runs API and frontend tests through Turbo with caching disabled. `yarn workspace api test` runs the same suite directly; `yarn workspace api test:watch` watches for changes. Tests cover validation, controller error responses, and database CRUD, including concurrent toggles.
+`yarn test` runs API and frontend tests through Turbo with caching disabled. `yarn workspace api test` runs only the backend suite directly; `yarn workspace api test:watch` watches for changes. Tests cover validation, controller error responses, and database CRUD, including concurrent toggles.
 
 Integration tests use MongoDB at `mongodb://127.0.0.1:27018` by default. To use a different test server:
 

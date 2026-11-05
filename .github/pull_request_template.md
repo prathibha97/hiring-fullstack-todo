@@ -12,7 +12,7 @@ Describe the problem, resulting behavior, and important implementation decisions
 ## Recordings
 
 - Product demo: <!-- Add a shareable recording link. -->
-- Five-minute code walkthrough: <!-- Add a shareable recording link. -->
+- Code and architecture walkthrough: <!-- Add a shareable recording link. -->
 
 ## Tradeoffs
 

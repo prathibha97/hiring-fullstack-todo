@@ -15,6 +15,7 @@ node_modules
 .env.production.local
 
 # Testing
+.vitest/
 coverage
 
 # Turbo

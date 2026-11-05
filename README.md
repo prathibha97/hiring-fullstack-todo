@@ -15,10 +15,11 @@ No local Node.js, Yarn, or environment files are required. The first build downl
 - App: http://localhost:8080
 - Swagger UI: http://localhost:8080/api/docs/
 - OpenAPI JSON: http://localhost:8080/api/openapi.json
+- Direct API: http://localhost:4000/api/todos
 
 Nginx serves the built React app and proxies `/api` to Express over the Compose network. Express connects to `mongodb:27017`. MongoDB must become healthy before the API starts, and the API must become healthy before Nginx starts. The API runs as the non-root Node user with production dependencies. Images use separate build and runtime stages; local environment files, dependencies, and build outputs are excluded from the build context.
 
-The API is available through Nginx rather than a published host port. MongoDB remains bound to loopback at port 27018 for local development and integration tests. Data is retained in the existing `mongodb_data` named volume.
+The frontend uses the API through Nginx. The API is also published on loopback port 4000 for direct testing. MongoDB remains bound to loopback at port 27018 for local development and integration tests. Data is retained in the existing `mongodb_data` named volume.
 
 ```sh
 docker compose ps
@@ -34,7 +35,7 @@ If a port is occupied, override it when starting the stack:
 WEB_PORT=8081 MONGODB_PORT=27019 docker compose up --build -d --wait
 ```
 
-Use the same overrides for subsequent Compose commands. The app and Swagger then use port 8081. Use `MONGODB_TEST_URI=mongodb://127.0.0.1:27019 yarn test` if running integration tests against the alternate MongoDB port.
+Use the same overrides for subsequent Compose commands. The app and Swagger then use port 8081. The direct API port remains 4000; stop a host API server before starting the full Compose stack, or change the API port mapping if that port is occupied. Use `MONGODB_TEST_URI=mongodb://127.0.0.1:27019 yarn test` if running integration tests against the alternate MongoDB port.
 
 Containers run compiled builds without source mounts or hot reload. Rebuild after source changes. The frontend uses same-origin API requests in Docker, so no browser-visible container hostname or Vite URL configuration is needed. Local `.env` files are not read by the container images; Compose supplies the API configuration directly.
 
@@ -87,16 +88,17 @@ node scripts/smoke-test.mjs
 
 For a different web port, use `SMOKE_BASE_URL=http://localhost:8081 node scripts/smoke-test.mjs`. The script creates uniquely named tasks and removes only those tasks afterward. It checks HTTP integration, not browser rendering.
 
-See [demo preparation](docs/demo-preparation.md) for the recording sequence, code walkthrough, and submission checklist. After the first successful hosted CI run, the two job checks can be made required in the repository's branch protection settings.
-
 ## Structure
 
 - `apps/web`: React, TypeScript, Tailwind, shadcn/ui, TanStack Query, and Sonner. Feature components and HTTP/query logic live together under `src/features/todos`.
 - `apps/api`: Express, Zod validators, controllers, services, repositories, and Mongoose models. OpenAPI is generated from Zod schemas.
-- `packages`: shared ESLint/TypeScript configuration and the remaining UI workspace.
+- `packages`: shared ESLint/TypeScript configuration and the shared UI workspace.
 
-## Scope and submission
+## Recordings
+
+- [Product demo](https://drive.google.com/file/d/1RmUNzDG7jXJavbMqt-kddddYLZPQBUyQ/view?usp=sharing)
+- [Code and architecture walkthrough](https://drive.google.com/file/d/1HBqJGxZjBmvb1jV6HNtPGX8MHcP2EFKh/view?usp=sharing)
+
+## Assumptions and limitations
 
 The app has one shared task list without authentication. The Compose setup is intended for local assessment review; MongoDB has no authentication and host ports bind to loopback. Health checks confirm HTTP availability after initial database connection, not ongoing database readiness. There is no TLS deployment configuration.
-
-Work on `develop` and open a PR into `main`, explaining the implementation and tradeoffs. Include the short product demo and five-minute code walkthrough links, then submit through the assessment form.
