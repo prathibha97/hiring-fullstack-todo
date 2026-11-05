@@ -1,159 +1,104 @@
-# Turborepo starter
+# Full-stack TODO assessment
 
-This Turborepo starter is maintained by the Turborepo core team.
+React/Vite frontend and Express API in a Yarn/Turborepo monorepo, backed by MongoDB. Tasks support creation, editing, deletion, done toggling, server-side search/filtering, and pagination.
 
-## Using this example
+## Run with Docker Compose
 
-Run the following command:
-
-```sh
-npx create-turbo@latest
-```
-
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `@next/eslint-plugin-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+Install Docker Desktop (or Docker Engine with the Compose plugin), start Docker, and run from the repository root:
 
 ```sh
-cd my-turborepo
-turbo build
+docker compose up --build -d --wait
 ```
 
-Without global `turbo`, use your package manager:
+No local Node.js, Yarn, or environment files are required. The first build downloads dependencies and takes longer than subsequent builds.
+
+- App: http://localhost:8080
+- Swagger UI: http://localhost:8080/api/docs/
+- OpenAPI JSON: http://localhost:8080/api/openapi.json
+- Direct API: http://localhost:4000/api/todos
+
+Nginx serves the built React app and proxies `/api` to Express over the Compose network. Express connects to `mongodb:27017`. MongoDB must become healthy before the API starts, and the API must become healthy before Nginx starts. The API runs as the non-root Node user with production dependencies. Images use separate build and runtime stages; local environment files, dependencies, and build outputs are excluded from the build context.
+
+The frontend uses the API through Nginx. The API is also published on loopback port 4000 for direct testing. MongoDB remains bound to loopback at port 27018 for local development and integration tests. Data is retained in the existing `mongodb_data` named volume.
 
 ```sh
-cd my-turborepo
-npx turbo build
-yarn exec turbo build
-yarn exec turbo build
+docker compose ps
+docker compose logs -f api
+docker compose down
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+Stopping the stack retains task data. `docker compose down -v` permanently removes the database volume and its tasks; use it only when intentionally resetting the app.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+If a port is occupied, override it when starting the stack:
 
 ```sh
-turbo build --filter=docs
+WEB_PORT=8081 MONGODB_PORT=27019 docker compose up --build -d --wait
 ```
 
-Without global `turbo`:
+Use the same overrides for subsequent Compose commands. The app and Swagger then use port 8081. The direct API port remains 4000; stop a host API server before starting the full Compose stack, or change the API port mapping if that port is occupied. Use `MONGODB_TEST_URI=mongodb://127.0.0.1:27019 yarn test` if running integration tests against the alternate MongoDB port.
+
+Containers run compiled builds without source mounts or hot reload. Rebuild after source changes. The frontend uses same-origin API requests in Docker, so no browser-visible container hostname or Vite URL configuration is needed. Local `.env` files are not read by the container images; Compose supplies the API configuration directly.
+
+## Local development
+
+Use Node.js 24+ and Yarn 4.17.1. Start only MongoDB in Docker:
 
 ```sh
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-yarn exec turbo build --filter=docs
+yarn install --immutable
+cp -n apps/api/.env.example apps/api/.env
+cp -n apps/web/.env.example apps/web/.env.local
+docker compose up -d --wait mongodb
 ```
 
-### Develop
-
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+Start the API and frontend in separate terminals:
 
 ```sh
-cd my-turborepo
-turbo dev
+yarn workspace api dev
 ```
-
-Without global `turbo`, use your package manager:
 
 ```sh
-cd my-turborepo
-npx turbo dev
-yarn exec turbo dev
-yarn exec turbo dev
+yarn workspace web dev
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+App: http://localhost:5173. API/Swagger: http://localhost:4000/api/docs/. See the app READMEs for environment settings and behavior.
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+## Checks
+
+With Docker MongoDB running:
 
 ```sh
-turbo dev --filter=web
+yarn lint
+yarn check-types
+yarn test
+yarn build
+yarn workspace web format:check
 ```
 
-Without global `turbo`:
+Frontend tests use Vitest, Testing Library, and jsdom. Backend tests cover validation, HTTP behavior, and real MongoDB integration in a unique test database. Tests do not modify development tasks.
+
+## Continuous integration
+
+GitHub Actions runs on pushes to `develop` and `main`, pull requests targeting either branch, and manual dispatch. The first job installs the locked dependencies, runs lint, strict type checks, frontend formatting, all tests against Docker MongoDB, and workspace builds. The second job builds and starts the full Compose stack, then checks the app assets, Swagger/OpenAPI, and TODO operations through Nginx. Both jobs clean up their temporary containers and volumes. They currently use the Ubuntu 22.04 runner because MongoDB 8.0 rejects newer kernels used by `ubuntu-latest`; see [MongoDB’s kernel compatibility notice](https://www.mongodb.com/docs/v8.0/release-notes/8.0/). Revisit this runner pin when MongoDB supports the newer hosted runner kernel. No repository secrets, image publishing, or deployment are configured.
+
+To run the container smoke check locally after starting Compose:
 
 ```sh
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-yarn exec turbo dev --filter=web
+node scripts/smoke-test.mjs
 ```
 
-### Remote Caching
+For a different web port, use `SMOKE_BASE_URL=http://localhost:8081 node scripts/smoke-test.mjs`. The script creates uniquely named tasks and removes only those tasks afterward. It checks HTTP integration, not browser rendering.
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+## Structure
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+- `apps/web`: React, TypeScript, Tailwind, shadcn/ui, TanStack Query, and Sonner. Feature components and HTTP/query logic live together under `src/features/todos`.
+- `apps/api`: Express, Zod validators, controllers, services, repositories, and Mongoose models. OpenAPI is generated from Zod schemas.
+- `packages`: shared ESLint/TypeScript configuration and the shared UI workspace.
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+## Recordings
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+- [Product demo](https://drive.google.com/file/d/1RmUNzDG7jXJavbMqt-kddddYLZPQBUyQ/view?usp=sharing)
+- [Code and architecture walkthrough](https://drive.google.com/file/d/1HBqJGxZjBmvb1jV6HNtPGX8MHcP2EFKh/view?usp=sharing)
 
-```sh
-cd my-turborepo
-turbo login
-```
+## Assumptions and limitations
 
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-yarn exec turbo login
-yarn exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-yarn exec turbo link
-yarn exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+The app has one shared task list without authentication. The Compose setup is intended for local assessment review; MongoDB has no authentication and host ports bind to loopback. Health checks confirm HTTP availability after initial database connection, not ongoing database readiness. There is no TLS deployment configuration.

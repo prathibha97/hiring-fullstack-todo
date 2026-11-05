@@ -1,0 +1,13 @@
+.git
+**/node_modules
+**/dist
+**/coverage
+**/.vitest
+**/.turbo
+**/.next
+**/.env
+**/.env.*
+**/*.tsbuildinfo
+.yarn
+.DS_Store
+*.log

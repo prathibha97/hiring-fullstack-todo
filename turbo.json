@@ -16,6 +16,29 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "api#build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**"]
+    },
+    "api#dev": {
+      "cache": false,
+      "persistent": true,
+      "env": ["PORT", "CLIENT_URL", "NODE_ENV", "MONGODB_URI"]
+    },
+    "api#test": {
+      "cache": false,
+      "env": ["MONGODB_TEST_URI", "CLIENT_URL", "NODE_ENV"]
+    },
+    "web#test": {
+      "cache": false
+    },
+    "web#build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**"],
+      "env": ["VITE_API_URL"]
     }
   }
 }

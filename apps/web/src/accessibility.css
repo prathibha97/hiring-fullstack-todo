@@ -1,0 +1,44 @@
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  transform: translateY(-160%);
+  border-radius: 5px;
+  padding: 8px 12px;
+  background: var(--primary);
+  color: white;
+  font-size: 13px;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+@media (pointer: coarse) {
+  .task-checkbox {
+    width: 24px;
+    height: 24px;
+    margin-top: 0;
+  }
+  .task-actions button {
+    min-width: 36px;
+    min-height: 36px;
+  }
+  .task-filter {
+    min-height: 44px;
+  }
+  .description-toggle {
+    min-height: 36px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
